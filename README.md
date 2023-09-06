@@ -1,2 +1,6 @@
 # java-explore-with-me
-Template repository for ExploreWithMe project.
+
+## Модель базы данных основного сервиса
+
+![]()
+
