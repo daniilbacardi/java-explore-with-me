@@ -9,7 +9,7 @@
 ![](stat_service_schema.png)
 
 ## Пример реализации методов взаимодействия между сервисами 
-#### основной сервис сначала обращается к клиенту сервиса статистики и сохраняет данные в сервисе статистики, 
+#### основной сервис обращается к клиенту сервиса статистики и направляет запрос на сохранение данных в сервисе статистики, 
 
     @Override
     public void addHit(HttpServletRequest httpServletRequest) {
@@ -19,7 +19,7 @@
                 LocalDateTime.parse(LocalDateTime.now().format(CommonUtils.FORMATTER), CommonUtils.FORMATTER));
     }
 
-#### а затем, отправляет запросы и получает ответы c сохраненными данными от клиента сервиса статистики
+#### основной сервис отправляет запросы клиенту сервиса статистики и получает ответы c ранее сохраненными данными 
 
     @Override
     public List<ViewStats> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
