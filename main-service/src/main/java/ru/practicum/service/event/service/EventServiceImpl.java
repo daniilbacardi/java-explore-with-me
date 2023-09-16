@@ -128,8 +128,8 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventFullDto updateEventPrivate(Long userId, Long eventId, UpdateEventUserRequest updateEventUserRequest) {
         log.info("EventServiceImpl: updateEventPrivate вызван");
-        if (updateEventUserRequest.getEventDate() != null && updateEventUserRequest.getEventDate().
-                isBefore(LocalDateTime.now().plusHours(2))) {
+        if (updateEventUserRequest.getEventDate() != null && updateEventUserRequest.getEventDate()
+                .isBefore(LocalDateTime.now().plusHours(2))) {
             throw new DatesException("Дата события должна быть не менее чем на два часа позже текущего момента.");
         }
         Event event = getEventByInitiator(eventId, userId);
@@ -192,8 +192,8 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventFullDto updateEventAdmin(Long eventId, UpdateEventAdminRequest updateEventAdminRequest) {
         log.info("EventServiceImpl: updateEventAdmin вызван");
-        if (updateEventAdminRequest.getEventDate() != null && updateEventAdminRequest.getEventDate().
-                isBefore(LocalDateTime.now().plusHours(2))) {
+        if (updateEventAdminRequest.getEventDate() != null && updateEventAdminRequest.getEventDate()
+                .isBefore(LocalDateTime.now().plusHours(2))) {
             throw new DatesException("Дата события должна быть не менее чем на два часа позже текущего момента.");
         }
         Event event = getEvent(eventId);

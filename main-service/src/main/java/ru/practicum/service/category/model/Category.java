@@ -1,7 +1,6 @@
 package ru.practicum.service.category.model;
 
 import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 

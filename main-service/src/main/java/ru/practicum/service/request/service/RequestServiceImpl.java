@@ -58,8 +58,8 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("Запрос уже существует");
         }
         if (event.getParticipantLimit() != 0 &&
-                (statsService.getConfirmedRequests(List.of(event)).
-                        getOrDefault(eventId, 0L) + 1) > event.getParticipantLimit()) {
+                (statsService.getConfirmedRequests(List.of(event))
+                        .getOrDefault(eventId, 0L) + 1) > event.getParticipantLimit()) {
             throw new ConflictException("Лимит участников исчерпан");
         }
         Request request = Request.builder()
@@ -132,8 +132,8 @@ public class RequestServiceImpl implements RequestService {
         if (!requests.stream().map(Request::getStatus).allMatch(RequestStatus.PENDING::equals)) {
             throw new ConflictException("Запрос не может быть изменен");
         }
-        Long limit = event.getParticipantLimit() - statsService.getConfirmedRequests(List.of(event)).
-                getOrDefault(eventId, 0L);
+        Long limit = event.getParticipantLimit() - statsService.getConfirmedRequests(List.of(event))
+                .getOrDefault(eventId, 0L);
         validateLimit(limit, event.getParticipantLimit());
         if (eventRequestStatusUpdateRequest.getStatus().equals(RequestStatusAction.REJECTED)) {
             rejected.addAll(changeStatusAndSave(requests, RequestStatus.REJECTED));
