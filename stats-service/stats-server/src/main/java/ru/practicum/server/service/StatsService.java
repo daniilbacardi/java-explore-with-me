@@ -1,7 +1,7 @@
 package ru.practicum.server.service;
 
-import ru.practicum.dto.EndpointHit;
-import ru.practicum.dto.ViewStats;
+import ru.practicum.dto.model.EndpointHit;
+import ru.practicum.dto.model.ViewStats;
 
 import java.time.LocalDateTime;
 import java.util.List;
