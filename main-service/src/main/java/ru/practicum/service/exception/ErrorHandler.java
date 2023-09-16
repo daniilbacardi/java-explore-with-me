@@ -40,7 +40,7 @@ public class ErrorHandler {
                 .build();
     }
 
-    @ExceptionHandler({EntityNotFoundException.class})
+    @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public ApiError handleNotFound(final RuntimeException e) {
