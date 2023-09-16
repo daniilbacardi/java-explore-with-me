@@ -67,13 +67,13 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto getCategoryDtoById(Long catId) {
         log.info("CategoryServiceImpl: getCategoryDtoById выполнено {}", catId);
         return categoryMapper.fromModelToDto(categoryRepository.findById(catId).orElseThrow(()
-                -> new EntityNotFoundException("Категория не найдена")));
+                -> new EntityNotFoundException("Категория не найдена" + catId)));
     }
 
     @Override
     public Category getCategoryById(Long catId) {
         log.info("CategoryServiceImpl: getCategoryById выполнено {}", catId);
         return categoryRepository.findById(catId).orElseThrow(()
-                -> new EntityNotFoundException("Категория не найдена"));
+                -> new EntityNotFoundException("Категория не найдена" + catId));
     }
 }
