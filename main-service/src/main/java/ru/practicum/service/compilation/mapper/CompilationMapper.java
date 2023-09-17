@@ -8,7 +8,6 @@ import ru.practicum.service.compilation.model.Compilation;
 import ru.practicum.service.event.dto.EventShortDto;
 import ru.practicum.service.event.model.Event;
 
-import java.util.List;
 import java.util.Set;
 
 @Mapper(componentModel = "spring")
