@@ -9,13 +9,14 @@ import ru.practicum.service.event.dto.EventShortDto;
 import ru.practicum.service.event.model.Event;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public interface CompilationMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "events", source = "events")
-    Compilation fromDtoToModel(NewCompilationDto newCompilationDto, List<Event> events);
+    Compilation fromDtoToModel(NewCompilationDto newCompilationDto, Set<Event> events);
 
     @Mapping(target = "events", source = "events")
-    CompilationDto fromModelToDto(Compilation compilation, List<EventShortDto> events);
+    CompilationDto fromModelToDto(Compilation compilation, Set<EventShortDto> events);
 }

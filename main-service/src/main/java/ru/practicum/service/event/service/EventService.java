@@ -8,15 +8,16 @@ import ru.practicum.service.event.model.Event;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public interface EventService {
     EventFullDto getEventByIdPublic(Long id, HttpServletRequest httpServletRequest);
 
-    List<EventShortDto> getEventsPublic(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
-                                        LocalDateTime rangeEnd, Boolean onlyAvailable, EventSortType sort,
-                                        Integer from, Integer size, HttpServletRequest httpServletRequest);
+    Set<EventShortDto> getEventsPublic(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
+                                       LocalDateTime rangeEnd, Boolean onlyAvailable, EventSortType sort,
+                                       Integer from, Integer size, HttpServletRequest httpServletRequest);
 
-    List<EventShortDto> getEventsPrivate(Long userId, int from, int size);
+    Set<EventShortDto> getEventsPrivate(Long userId, int from, int size);
 
     EventFullDto addEventPrivate(Long userId, NewEventDto newEventDto);
 
@@ -25,14 +26,14 @@ public interface EventService {
     EventFullDto updateEventPrivate(Long userId, Long eventId, UpdateEventUserRequest updateEventUserRequest);
 
 
-    List<EventFullDto> getEventsAdmin(List<Long> users, List<EventState> states, List<Long> categories,
-                                      LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size);
+    Set<EventFullDto> getEventsAdmin(List<Long> users, List<EventState> states, List<Long> categories,
+                                     LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size);
 
     EventFullDto updateEventAdmin(Long eventId, UpdateEventAdminRequest updateEventAdminRequest);
 
-    List<EventShortDto> getEventShortWithViewsAndRequests(List<Event> events);
+    Set<EventShortDto> getEventShortWithViewsAndRequests(Set<Event> events);
 
-    List<Event> getEventsByIdsList(List<Long> ids);
+    Set<Event> getEventsByIdsList(Set<Long> ids);
 
     Event getEvent(Long eventId);
 }

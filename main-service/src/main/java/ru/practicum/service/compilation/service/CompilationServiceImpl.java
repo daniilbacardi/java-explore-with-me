@@ -32,7 +32,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public CompilationDto addCompilation(NewCompilationDto newCompilationDto) {
         log.info("CompilationServiceImpl: addCompilation вызван");
-        List<Event> events = new ArrayList<>();
+        Set<Event> events = new HashSet<>();
         if (newCompilationDto.getEvents() != null) {
             events = eventService.getEventsByIdsList(newCompilationDto.getEvents());
             if (newCompilationDto.getEvents().size() != events.size()) {
@@ -58,7 +58,7 @@ public class CompilationServiceImpl implements CompilationService {
             compilation.setTitle(updateCompilationRequest.getTitle());
         }
         if (updateCompilationRequest.getEvents() != null) {
-            List<Event> events = eventService.getEventsByIdsList(updateCompilationRequest.getEvents());
+            Set<Event> events = eventService.getEventsByIdsList(updateCompilationRequest.getEvents());
             if (events.size() != updateCompilationRequest.getEvents().size()) {
                 throw new EntityNotFoundException("События не найдены");
             }
@@ -85,17 +85,17 @@ public class CompilationServiceImpl implements CompilationService {
         Set<Event> events = new HashSet<>();
         compilations.forEach(compilation -> events.addAll(compilation.getEvents()));
         Map<Long, EventShortDto> eventsMap = new HashMap<>();
-        eventService.getEventShortWithViewsAndRequests(new ArrayList<>(events))
+        eventService.getEventShortWithViewsAndRequests(new HashSet<>(events))
                 .forEach(eventShortDto -> eventsMap.put(eventShortDto.getId(), eventShortDto));
         if (pinned != null) {
             compilations.forEach(compilation -> {
-                List<EventShortDto> shortList = new ArrayList<>();
+                Set<EventShortDto> shortList = new HashSet<>();
                 compilation.getEvents().forEach(event -> shortList.add(eventsMap.get(event.getId())));
                 compilationDtoList.add(compilationMapper.fromModelToDto(compilation, shortList));
             });
         } else {
             compilationRepository.findAll(page).forEach(compilation -> {
-                List<EventShortDto> shortList = new ArrayList<>();
+                Set<EventShortDto> shortList = new HashSet<>();
                 compilation.getEvents().forEach(event -> shortList.add(eventsMap.get(event.getId())));
                 compilationDtoList.add(compilationMapper.fromModelToDto(compilation, shortList));
             });
@@ -108,7 +108,7 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto getCompilationById(Long compId) {
         log.info("СompilationServiceImpl: getCompilationById вызван");
         Compilation compilation = getCompilation(compId);
-        List<EventShortDto> events = eventService.getEventShortWithViewsAndRequests(compilation.getEvents());
+        Set<EventShortDto> events = eventService.getEventShortWithViewsAndRequests(compilation.getEvents());
         log.info("СompilationServiceImpl: getCompilationById выполнено id {}", compId);
         return compilationMapper.fromModelToDto(compilation, events);
     }

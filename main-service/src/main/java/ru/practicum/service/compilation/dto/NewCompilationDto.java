@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,5 +19,5 @@ public class NewCompilationDto {
     @NotBlank
     @Length(max = 50)
     String title;
-    List<Long> events;
+    Set<Long> events;
 }

@@ -8,6 +8,7 @@ import ru.practicum.service.event.model.Event;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long>, EventCustomRepository {
@@ -15,5 +16,5 @@ public interface EventRepository extends JpaRepository<Event, Long>, EventCustom
 
     Page<Event> findAllByInitiatorId(Long userId, Pageable page);
 
-    List<Event> findAllByIdIn(List<Long> eventsId);
+    Set<Event> findAllByIdIn(Set<Long> eventsId);
 }

@@ -12,6 +12,7 @@ import ru.practicum.service.request.service.RequestService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,9 +25,9 @@ public class EventPrivateController {
     private final RequestService requestService;
 
     @GetMapping
-    public List<EventShortDto> getEventsPrivate(@PathVariable("userId") Long userId,
-                                                @RequestParam(name = "from",  defaultValue = "0") int from,
-                                                @RequestParam(name = "size", defaultValue = "10") int size) {
+    public Set<EventShortDto> getEventsPrivate(@PathVariable("userId") Long userId,
+                                               @RequestParam(name = "from",  defaultValue = "0") int from,
+                                               @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("EventPrivateController: getEventsPrivate выполнено userId {}, from {}, " +
                 "size {}", userId, from, size);
         return eventService.getEventsPrivate(userId, from, size);

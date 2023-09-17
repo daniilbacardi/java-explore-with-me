@@ -17,6 +17,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,21 +29,21 @@ public class EventPublicController {
     private final EventService eventService;
 
     @GetMapping
-    public List<EventShortDto> getEventsPublic(@RequestParam(required = false) String text,
-                                               @RequestParam(required = false) List<Long> categories,
-                                               @RequestParam(required = false) Boolean paid,
-                                               @RequestParam(required = false) @DateTimeFormat(
+    public Set<EventShortDto> getEventsPublic(@RequestParam(required = false) String text,
+                                              @RequestParam(required = false) List<Long> categories,
+                                              @RequestParam(required = false) Boolean paid,
+                                              @RequestParam(required = false) @DateTimeFormat(
                                                        pattern = CommonConstants.DATE_FORMAT) LocalDateTime rangeStart,
-                                               @RequestParam(required = false) @DateTimeFormat(
+                                              @RequestParam(required = false) @DateTimeFormat(
                                                        pattern = CommonConstants.DATE_FORMAT) LocalDateTime rangeEnd,
-                                               @RequestParam(required = false,
+                                              @RequestParam(required = false,
                                                        defaultValue = "false") Boolean onlyAvailable,
-                                               @RequestParam(required = false) EventSortType sort,
-                                               @RequestParam(required = false,
+                                              @RequestParam(required = false) EventSortType sort,
+                                              @RequestParam(required = false,
                                                        defaultValue = "0") @PositiveOrZero Integer from,
-                                               @RequestParam(required = false,
+                                              @RequestParam(required = false,
                                                        defaultValue = "10") @Positive Integer size,
-                                               HttpServletRequest httpServletRequest) {
+                                              HttpServletRequest httpServletRequest) {
         log.info("EventPublicController: getEventsPublic выполнено text {}, categories {}, paid {}, " +
                 "rangeStart {}, rangeEnd {}, onlyAvailable {}, sort {}, from {}, size {}, " +
                 "httpServletRequest {}", text, categories, paid, rangeStart, rangeEnd,

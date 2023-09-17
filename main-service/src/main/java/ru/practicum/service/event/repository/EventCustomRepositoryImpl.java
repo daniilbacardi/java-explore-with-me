@@ -10,13 +10,15 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class EventCustomRepositoryImpl implements EventCustomRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public List<Event> findEventsByPublic(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
+    public Set<Event> findEventsByPublic(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
                                           LocalDateTime rangeEnd, Integer from, Integer size) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> criteriaQuery = criteriaBuilder.createQuery(Event.class);
@@ -50,12 +52,14 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
         }
         predicate = criteriaBuilder.and(predicate, root.get("state").in(EventState.PUBLISHED));
         criteriaQuery.select(root).where(predicate);
-        return entityManager.createQuery(criteriaQuery).setFirstResult(from).setMaxResults(size).getResultList();
+        List<Event> eventsList = entityManager.createQuery(criteriaQuery).setFirstResult(from)
+                .setMaxResults(size).getResultList();
+        return new HashSet<>(eventsList);
     }
 
-    public List<Event> findEventsByAdmin(List<Long> users, List<EventState> states, List<Long> categories,
-                                         LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from,
-                                         Integer size) {
+    public Set<Event> findEventsByAdmin(List<Long> users, List<EventState> states, List<Long> categories,
+                                        LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from,
+                                        Integer size) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> criteriaQuery = criteriaBuilder.createQuery(Event.class);
         Root<Event> root = criteriaQuery.from(Event.class);
@@ -78,6 +82,8 @@ public class EventCustomRepositoryImpl implements EventCustomRepository {
                     rangeEnd));
         }
         criteriaQuery.select(root).where(predicate);
-        return entityManager.createQuery(criteriaQuery).setFirstResult(from).setMaxResults(size).getResultList();
+        List<Event> eventsList = entityManager.createQuery(criteriaQuery).setFirstResult(from)
+                .setMaxResults(size).getResultList();
+        return new HashSet<>(eventsList);
     }
 }

@@ -28,10 +28,7 @@ import ru.practicum.service.user.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,37 +53,44 @@ public class EventServiceImpl implements EventService {
             throw new EntityNotFoundException("Событие не найдено");
         }
         statsService.addHit(httpServletRequest);
-        List<EventFullDto> list = getEventWithViewsAndRequests(List.of(event));
-        EventFullDto eventFullDto = list.get(0);
+        Set<Event> eventSet = new HashSet<>();
+        eventSet.add(event);
+        Set<EventFullDto> list = getEventWithViewsAndRequests(eventSet);
+        EventFullDto eventFullDto = list.iterator().next();
         log.info("EventServiceImpl: getEventByIdPublic выполнено id = {}", id);
         return eventFullDto;
     }
 
     @Override
-    public List<EventShortDto> getEventsPublic(String text, List<Long> categories, Boolean paid,
-                                               LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                               Boolean onlyAvailable, EventSortType sort, Integer from,
-                                               Integer size, HttpServletRequest httpServletRequest) {
+    public Set<EventShortDto> getEventsPublic(String text, List<Long> categories, Boolean paid,
+                                              LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                              Boolean onlyAvailable, EventSortType sort, Integer from,
+                                              Integer size, HttpServletRequest httpServletRequest) {
         log.info("EventServiceImpl: getEventsPublic вызван");
         validateTime(rangeStart, rangeEnd);
-        List<Event> events = eventRepository.findEventsByPublic(text, categories, paid,
+        Set<Event> events = eventRepository.findEventsByPublic(text, categories, paid,
                 rangeStart, rangeEnd, from, size);
         if (events.isEmpty()) {
-            return List.of();
+            return Collections.emptySet();
         }
         Map<Long, Long> partLimit = new HashMap<>();
         events.forEach(event -> partLimit.put(event.getId(), event.getParticipantLimit()));
-        List<EventShortDto> eventsShortDtoList = getEventShortWithViewsAndRequests(events);
+        Set<EventShortDto> eventsShortDtoList = getEventShortWithViewsAndRequests(events);
         if (onlyAvailable) {
             eventsShortDtoList = eventsShortDtoList.stream()
                     .filter(eventShortDto -> (partLimit.get(eventShortDto.getId()) == 0 ||
                             partLimit.get(eventShortDto.getId()) > eventShortDto.getConfirmedRequests()))
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toSet());
         }
-        if (sort != null && sort.equals(EventSortType.VIEWS)) {
-            eventsShortDtoList.sort(Comparator.comparing(EventShortDto::getViews));
-        } else if (sort != null && sort.equals(EventSortType.EVENT_DATE)) {
-            eventsShortDtoList.sort(Comparator.comparing(EventShortDto::getEventDate));
+        if (sort != null) {
+            List<EventShortDto> sortedList = new ArrayList<>(eventsShortDtoList);
+
+            if (sort.equals(EventSortType.VIEWS)) {
+                sortedList.sort(Comparator.comparing(EventShortDto::getViews));
+            } else if (sort.equals(EventSortType.EVENT_DATE)) {
+                sortedList.sort(Comparator.comparing(EventShortDto::getEventDate));
+            }
+            eventsShortDtoList = new LinkedHashSet<>(sortedList);
         }
         statsService.addHit(httpServletRequest);
         log.info("EventServiceImpl: getEventsPublic выполнено");
@@ -94,11 +98,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventShortDto> getEventsPrivate(Long userId, int from, int size) {
+    public Set<EventShortDto> getEventsPrivate(Long userId, int from, int size) {
         log.info("EventServiceImpl: getEventsPrivate вызван");
         userService.findUserById(userId);
         Pageable page = PageRequest.of(from / size, size);
-        List<Event> events = eventRepository.findAllByInitiatorId(userId, page).stream().collect(Collectors.toList());
+        Set<Event> events = eventRepository.findAllByInitiatorId(userId, page).stream().collect(Collectors.toSet());
         log.info("EventServiceImpl: getEventsPrivate выполнено userId = {}", userId);
         return getEventShortWithViewsAndRequests(events);
     }
@@ -120,8 +124,9 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getEventPrivate(Long userId, Long eventId) {
         log.info("EventServiceImpl: getEventPrivate вызван");
         Event event = getEventByInitiator(eventId, userId);
+        Set<EventFullDto> eventFullDtoSet = getEventWithViewsAndRequests(Set.of(event));
         log.info("EventServiceImpl: getEventPrivate выполнено eventId - {}", eventId);
-        return getEventWithViewsAndRequests(List.of(event)).get(0);
+            return eventFullDtoSet.iterator().next();
     }
 
     @Override
@@ -171,19 +176,20 @@ public class EventServiceImpl implements EventService {
             event.setTitle(updateEventUserRequest.getTitle());
         }
         eventRepository.save(event);
+        Set<EventFullDto> eventFullDtoSet = getEventWithViewsAndRequests(Set.of(event));
         log.info("EventServiceImpl: getEventPrivate выполнено {}", event);
-        return getEventWithViewsAndRequests(List.of(event)).get(0);
+        return eventFullDtoSet.iterator().next();
     }
 
     @Override
-    public List<EventFullDto> getEventsAdmin(List<Long> users, List<EventState> states, List<Long> categories,
-                                             LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                             Integer from, Integer size) {
+    public Set<EventFullDto> getEventsAdmin(List<Long> users, List<EventState> states, List<Long> categories,
+                                            LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                            Integer from, Integer size) {
         log.info("EventServiceImpl: getEventsAdmin вызван");
         validateTime(rangeStart, rangeEnd);
-        List<Event> events = eventRepository.findEventsByAdmin(users, states, categories,
+        Set<Event> events = eventRepository.findEventsByAdmin(users, states, categories,
                 rangeStart, rangeEnd, from, size);
-        List<EventFullDto> fullEvents = getEventWithViewsAndRequests(events);
+        Set<EventFullDto> fullEvents = getEventWithViewsAndRequests(events);
         log.info("EventServiceImpl: getEventsAdmin выполнено {}", fullEvents);
         return fullEvents;
     }
@@ -236,13 +242,14 @@ public class EventServiceImpl implements EventService {
             }
         }
         eventRepository.save(event);
-        EventFullDto updatedEvent = getEventWithViewsAndRequests(List.of(getEvent(eventId))).get(0);
+        EventFullDto updatedEvent = getEventWithViewsAndRequests(Collections.singleton(getEvent(eventId)))
+                .iterator().next();
         log.info("EventServiceImpl: updateEventAdmin выполнено {}", updatedEvent);
         return updatedEvent;
     }
 
     @Override
-    public List<EventShortDto> getEventShortWithViewsAndRequests(List<Event> events) {
+    public Set<EventShortDto> getEventShortWithViewsAndRequests(Set<Event> events) {
         log.info("EventServiceImpl: getEventShortWithViewsAndRequests вызван");
         Map<Long, Long> views = statsService.getViews(events);
         Map<Long, Long> confirmedRequests = statsService.getConfirmedRequests(events);
@@ -250,11 +257,11 @@ public class EventServiceImpl implements EventService {
         return events.stream().map(event -> eventMapper.fromModelToShortDto(event,
                         confirmedRequests.getOrDefault(event.getId(), 0L),
                         views.getOrDefault(event.getId(), 0L)))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public List<Event> getEventsByIdsList(List<Long> ids) {
+    public Set<Event> getEventsByIdsList(Set<Long> ids) {
         log.info("EventServiceImpl: getEventsByIdsList выполнено {}", ids);
         return eventRepository.findAllByIdIn(ids);
     }
@@ -295,7 +302,7 @@ public class EventServiceImpl implements EventService {
                 .orElseGet(() -> locationRepository.save(location));
     }
 
-    private List<EventFullDto> getEventWithViewsAndRequests(List<Event> events) {
+    private Set<EventFullDto> getEventWithViewsAndRequests(Set<Event> events) {
         log.info("EventServiceImpl: getEventWithViewsAndRequests вызван");
         Map<Long, Long> views = statsService.getViews(events);
         Map<Long, Long> confirmedRequests = statsService.getConfirmedRequests(events);
@@ -303,6 +310,6 @@ public class EventServiceImpl implements EventService {
         return events.stream().map(event -> eventMapper.fromModelToFullDto(event,
                         confirmedRequests.getOrDefault(event.getId(), 0L),
                         views.getOrDefault(event.getId(), 0L)))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 }

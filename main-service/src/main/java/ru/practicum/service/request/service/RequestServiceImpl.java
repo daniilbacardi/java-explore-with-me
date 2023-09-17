@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,7 +59,7 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("Запрос уже существует");
         }
         if (event.getParticipantLimit() != 0 &&
-                (statsService.getConfirmedRequests(List.of(event))
+                (statsService.getConfirmedRequests(Set.of(event))
                         .getOrDefault(eventId, 0L) + 1) > event.getParticipantLimit()) {
             throw new ConflictException("Лимит участников исчерпан");
         }
@@ -132,7 +133,7 @@ public class RequestServiceImpl implements RequestService {
         if (!requests.stream().map(Request::getStatus).allMatch(RequestStatus.PENDING::equals)) {
             throw new ConflictException("Запрос не может быть изменен");
         }
-        Long limit = event.getParticipantLimit() - statsService.getConfirmedRequests(List.of(event))
+        Long limit = event.getParticipantLimit() - statsService.getConfirmedRequests(Set.of(event))
                 .getOrDefault(eventId, 0L);
         validateLimit(limit, event.getParticipantLimit());
         if (eventRequestStatusUpdateRequest.getStatus().equals(RequestStatusAction.REJECTED)) {

@@ -51,14 +51,14 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @Override
-    public Map<Long, Long> getViews(List<Event> events) {
+    public Map<Long, Long> getViews(Set<Event> events) {
         log.info("Method getViews invoke");
         Map<Long, Long> views = new HashMap<>();
         if (events.isEmpty()) {
             return views;
         }
-        List<Event> publishedEvents = events.stream()
-                .filter(event -> event.getPublishedOn() != null).collect(Collectors.toList());
+        Set<Event> publishedEvents = events.stream()
+                .filter(event -> event.getPublishedOn() != null).collect(Collectors.toSet());
         Optional<LocalDateTime> timePublished = publishedEvents.stream().map(Event::getPublishedOn)
                 .filter(Objects::nonNull).min(LocalDateTime::compareTo);
         if (timePublished.isPresent()) {
@@ -76,7 +76,7 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @Override
-    public Map<Long, Long> getConfirmedRequests(List<Event> events) {
+    public Map<Long, Long> getConfirmedRequests(Set<Event> events) {
         log.info("Method getConfirmedRequests invoke");
         List<Long> eventsId = events.stream().filter(event -> event.getPublishedOn() != null)
                 .map(Event::getId).collect(Collectors.toList());
