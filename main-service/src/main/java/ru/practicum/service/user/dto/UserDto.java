@@ -1,15 +1,15 @@
-package ru.practicum.dto;
+package ru.practicum.service.user.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ViewStats {
-    String app;
-    String uri;
-    Long hits;
+public class UserDto {
+    String name;
+    Long id;
+    String email;
 }

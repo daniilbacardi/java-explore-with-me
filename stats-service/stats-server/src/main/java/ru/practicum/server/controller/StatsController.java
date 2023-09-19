@@ -5,8 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.dto.EndpointHit;
-import ru.practicum.dto.ViewStats;
+import ru.practicum.dto.CommonConstants;
+import ru.practicum.dto.model.EndpointHit;
+import ru.practicum.dto.model.ViewStats;
+import ru.practicum.server.exception.DateException;
 import ru.practicum.server.service.StatsService;
 
 import javax.validation.Valid;
@@ -27,13 +29,16 @@ public class StatsController {
     }
 
     @GetMapping("/stats")
-    public List<ViewStats> getStats(@RequestParam(value = "start")
-                                        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
+    public List<ViewStats> getStats(@RequestParam (value = "start")
+                                        @DateTimeFormat(pattern = CommonConstants.DATE_FORMAT) LocalDateTime start,
                                     @RequestParam (value = "end")
-                                    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
+                                    @DateTimeFormat(pattern = CommonConstants.DATE_FORMAT) LocalDateTime end,
                                     @RequestParam (value = "uris", required = false) List<String> uris,
                                     @RequestParam (value = "unique",required = false,
                                             defaultValue = "false") Boolean unique) {
+        if (start.isAfter(end)) {
+            throw new DateException("Установлены неправильные даты");
+        }
         log.info("StatsController: getStats выполнено start = {}, end = {}, uris = {}, unique = {}",
                 start, end, uris, unique);
         return statsService.getStats(start, end, uris, unique);
