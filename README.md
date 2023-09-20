@@ -1,7 +1,5 @@
 # java-explore-with-me
 
-## Модель базы данных основного сервиса (включая доп фичу "Комментарии")
-
-![](main_service_schema.png)
+https://github.com/daniilbacardi/java-explore-with-me/pull/6
 
 
