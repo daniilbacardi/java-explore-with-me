@@ -29,7 +29,7 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public void addHit(HttpServletRequest httpServletRequest) {
-        log.info("Method addHit invoke");
+        log.info("StatsServiceImpl addHit вызван");
 
         statsClient.addHit("main-service",
                 httpServletRequest.getRequestURI(),
@@ -40,7 +40,7 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<ViewStats> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
-        log.info("Method getStats invoke");
+        log.info("StatsServiceImpl getStats вызван");
         ResponseEntity<Object> response = statsClient.getStats(start, end, uris, unique);
         try {
             return Arrays.asList(objectMapper.readValue(
@@ -52,7 +52,7 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public Map<Long, Long> getViews(Set<Event> events) {
-        log.info("Method getViews invoke");
+        log.info("StatsServiceImpl getViews вызван");
         Map<Long, Long> views = new HashMap<>();
         if (events.isEmpty()) {
             return views;
@@ -71,13 +71,13 @@ public class StatsServiceImpl implements StatsService {
                 views.put(eventId, views.getOrDefault(eventId, 0L) + stat.getHits());
             });
         }
-        log.info("Number of views = {}", views.size());
+        log.info("StatsServiceImpl getViews выполнено {}", views.size());
         return views;
     }
 
     @Override
     public Map<Long, Long> getConfirmedRequests(Set<Event> events) {
-        log.info("Method getConfirmedRequests invoke");
+        log.info("StatsServiceImpl getConfirmedRequests вызван");
         List<Long> eventsId = events.stream().filter(event -> event.getPublishedOn() != null)
                 .map(Event::getId).collect(Collectors.toList());
         Map<Long, Long> requests = new HashMap<>();
@@ -85,7 +85,7 @@ public class StatsServiceImpl implements StatsService {
             requestRepository.getAllEventIdsConfirmed(eventsId).forEach(eventWithRequests ->
                     requests.put(eventWithRequests.getEventId(), eventWithRequests.getConfirmedRequests()));
         }
-        log.info("Get information about confirmed requests");
+        log.info("StatsServiceImpl getConfirmedRequests выполнено {}", requests);
         return requests;
     }
 }

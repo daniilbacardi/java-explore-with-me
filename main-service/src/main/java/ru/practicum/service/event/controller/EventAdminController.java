@@ -37,7 +37,7 @@ public class EventAdminController {
                                             @RequestParam(required = false) @DateTimeFormat(
                                                      pattern = CommonConstants.DATE_FORMAT) LocalDateTime rangeEnd,
                                             @RequestParam(required = false, defaultValue = "0")
-                                                 @PositiveOrZero Integer from,
+                                                @PositiveOrZero Integer from,
                                             @RequestParam(required = false, defaultValue = "10")
                                                  @Positive Integer size) {
         log.info("EventAdminController: getEventsAdmin выполнено users {}, states {}, " +
