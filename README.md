@@ -18,7 +18,6 @@
 - PostgreSQL
 - Maven
 - Lombok, MapStruct
-- Junit5
 - Postman
 - Docker
 
